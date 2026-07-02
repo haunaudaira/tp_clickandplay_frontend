@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Click N' Play - Bienvenida</title>
+    <link rel="stylesheet" href="css/styles.css">
+    <link rel="icon" href="assets/img/favicon.png" type="image/x-icon">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Special+Elite&display=swap" rel="stylesheet">
+</head>
+<body>
+    <header>
+        <div class="logo-container">
+            <img src="assets/img/pruebalogo.png" alt="Logo" id="logo">
+        </div>
+        <!-- <nav>
+            <a href="index.html">Inicio</a>
+            <a href="#" id="nav-productos" style="opacity: 0.5; pointer-events: none;">Productos</a>
+        </nav> -->
+    </header>
+
+    <main class="contenedor-centrado">
+        <section class="bienvenida">
+            <h1>¡Bienvenido a nuestro Autoservicio!</h1>
+            <p class="ingreso-nombre">Para comenzar a armar tu pedido de Vinilos y DVDs, por favor indícanos tu nombre.</p>
+            
+            <form id="formulario-bienvenida">
+                <input type="text" id="nombreCliente" placeholder="Ingresa tu nombre..." required>
+                <button type="submit">Continuar</button>
+            </form>
+        </section>
+    </main>
+
+        <!-- TODO: HACER UN ARCHIVO PARA EL FOOTER Y LLAMARLO DESDE TODAS LAS VISTAS -->
+    <footer>
+        <p>Desarrollado por: Daira Haunau y Gaston Fragueiro </p>
+        <a href="https://clickandplay.taplink.site">Conoce mas sobre nosotros</a>
+    </footer>
+
+    <!-- conexion con js -->
+    <script src="js/bienvenida.js"></script>
+</body>
+</html>
