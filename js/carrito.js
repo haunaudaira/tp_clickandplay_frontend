@@ -79,8 +79,24 @@ const confirmarCompra = () => {
     const confirmacion = confirm("¿Deseas confirmar y finalizar tu compra?");
     
     if (confirmacion) {
-        // Redirigimos a la pantalla final donde usaremos jsPDF [6]
-        window.location.href = 'ticket.html';
+        // Enviamos la venta al backend para registrarla en la base de datos
+        (async () => {
+            try {
+                const productos = carrito.map(p => ({ id_producto: p.id, cantidad: p.cantidad }));
+                const total = carrito.reduce((acc, p) => acc + (Number(p.precio) || 0) * (Number(p.cantidad) || 0), 0);
+
+                await fetch('/admin/ventas/nueva', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ nombre_usuario: null, precio_total: total, productos })
+                });
+            } catch (err) {
+                console.error('Error al registrar la venta en el servidor:', err);
+            } finally {
+                // Redirigimos a la pantalla final donde usaremos jsPDF
+                window.location.href = 'ticket.html';
+            }
+        })();
     }
 };
 

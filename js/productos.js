@@ -8,16 +8,44 @@ if (!clienteGuardado) {
 }
 
 // traer prods de la bd
+const API_BASE = 'http://localhost:3000/admin/api';
+
 const cargarProductos = async () => {
     try {
-        const respuesta = await fetch('http://localhost:3000/api/productos');
+        const respuesta = await fetch(`${API_BASE}/productos`);
+        if (!respuesta.ok) {
+            throw new Error(`API devolvió estado ${respuesta.status}`);
+        }
         catalogoCompleto = await respuesta.json();
+        if (!Array.isArray(catalogoCompleto) || catalogoCompleto.length === 0) {
+            document.getElementById('contenedor-productos').innerHTML = "<p>No hay productos disponibles.</p>";
+            return;
+        }
         renderizarProductos(catalogoCompleto);
         actualizarContadorCarrito();
     } catch (error) {
         console.error("Error al conectar con la API:", error);
         document.getElementById('contenedor-productos').innerHTML = "<p>Error al cargar los productos.</p>";
     }
+};
+
+const obtenerRutaImagen = (producto) => {
+    const ruta = producto.imagen || producto.rutaImg || '';
+    if (!ruta) {
+        return 'assets/img/pruebalogo.png';
+    }
+    const rutaNormalizada = ruta.startsWith('/') ? ruta : `/${ruta}`;
+    return `http://localhost:3000${rutaNormalizada}`;
+};
+
+const obtenerCategoria = (producto) => {
+    const categoria = (producto.categoria || '').toString().trim().toUpperCase();
+    if (categoria) {
+        return categoria;
+    }
+
+    const genero = (producto.genero || '').toString().trim().toUpperCase();
+    return ['VINILO', 'DVD'].includes(genero) ? genero : '';
 };
 
 // dibujar productos en el DOM
@@ -28,12 +56,14 @@ const renderizarProductos = (productos) => {
     productos.forEach(producto => {
         const tarjeta = document.createElement('div');
         tarjeta.classList.add('tarjeta-producto');
-        
-        // el btn invoca a la funcion agregar pasandole todo el objeto convertido a texto (JSON)
+        const categoriaTexto = obtenerCategoria(producto) || 'Sin categoría';
+        const generoTexto = producto.genero && !['VINILO','DVD'].includes((producto.genero || '').toString().trim().toUpperCase()) ? producto.genero : '';
+
         tarjeta.innerHTML = `
-            <img src="http://localhost:3000/uploads/${producto.imagen || producto.rutaImg}" alt="${producto.nombre}">
+            <img src="${obtenerRutaImagen(producto)}" alt="${producto.nombre}">
             <h3>${producto.nombre}</h3>
-            <p>Categoría: ${producto.categoria}</p>
+            <p>Categoría: ${categoriaTexto}</p>
+            ${generoTexto ? `<p>Género: ${generoTexto}</p>` : ''}
             <p>Precio: $${producto.precio}</p>
             <button onclick='agregarAlCarrito(${JSON.stringify(producto)})'>Añadir al Carrito</button>
         `;
@@ -46,7 +76,7 @@ const filtrarCategoria = (categoria) => {
     if (categoria === 'TODOS') {
         renderizarProductos(catalogoCompleto);
     } else {
-        const filtrados = catalogoCompleto.filter(prod => prod.categoria === categoria);
+        const filtrados = catalogoCompleto.filter(prod => obtenerCategoria(prod) === categoria);
         renderizarProductos(filtrados);
     }
 };
