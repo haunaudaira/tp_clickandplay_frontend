@@ -1,47 +1,33 @@
 document.addEventListener('DOMContentLoaded', () => {
     const ticketContenido = document.getElementById('ticket-contenido');
     const carrito = JSON.parse(sessionStorage.getItem('carritoClickAndPlay')) || [];
+    const nombreCliente = localStorage.getItem('nombreCliente') || sessionStorage.getItem('nombreCliente') || 'Cliente';
 
-    if (!ticketContenido) {
-        return;
-    }
+    if (!ticketContenido) return;
 
     if (carrito.length === 0) {
-        ticketContenido.innerHTML = '<p>No hay productos en el carrito. Por favor, realiza una compra primero.</p>';
+        ticketContenido.innerHTML = '<p>No hay productos en el carrito</p>';
         return;
     }
 
-    let total = 0;
-    const lista = document.createElement('div');
-    lista.classList.add('ticket-list');
-
-    carrito.forEach(item => {
+    const total = carrito.reduce((suma, item) => suma + (Number(item.precio) || 0) * (Number(item.cantidad) || 0), 0);
+    const lineas = carrito.map(item => {
         const precio = Number(item.precio) || 0;
         const cantidad = Number(item.cantidad) || 0;
-        const subtotal = precio * cantidad;
-        total += subtotal;
+        return `${item.nombre} x ${cantidad} = $${(precio * cantidad).toFixed(2)}`;
+    }).join('<br>');
 
-        const fila = document.createElement('div');
-        fila.classList.add('ticket-item');
-        fila.innerHTML = `
-            <h3>${item.nombre}</h3>
-            <p>Cantidad: ${cantidad} x $${precio.toFixed(2)}</p>
-            <p>Subtotal: $${subtotal.toFixed(2)}</p>
-        `;
-        lista.appendChild(fila);
-    });
-
-    const resumen = document.createElement('div');
-    resumen.classList.add('ticket-resumen');
-    resumen.innerHTML = `
-        <h3>Total: $${total.toFixed(2)}</h3>
-        <button id="btn-descargar">Descargar Ticket</button>
-        <button id="btn-volver">Volver a productos</button>
+    ticketContenido.innerHTML = `
+        <div class="ticket-list">
+            <h3>Ticket de Compra</h3>
+            <p>Cliente: ${nombreCliente}</p>
+            <p>Fecha: ${new Date().toLocaleString('es-AR')}</p>
+            <div class="ticket-item">${lineas}</div>
+            <div class="ticket-resumen"><strong>Total:</strong> $${total.toFixed(2)}</div>
+            <button id="btn-descargar">Descargar Ticket</button>
+            <button id="btn-volver">Volver a productos</button>
+        </div>
     `;
-
-    ticketContenido.innerHTML = '';
-    ticketContenido.appendChild(lista);
-    ticketContenido.appendChild(resumen);
 
     const jsPDFConstructor = window.jspdf?.jsPDF || window.jsPDF;
     const btnDescargar = document.getElementById('btn-descargar');
@@ -59,28 +45,21 @@ document.addEventListener('DOMContentLoaded', () => {
 
             doc.setFontSize(18);
             doc.text('Ticket de Compra', margen, y);
-            y += 30;
+            y += 24;
             doc.setFontSize(12);
+            doc.text(`Cliente: ${nombreCliente}`, margen, y);
+            y += 18;
             doc.text(`Fecha: ${new Date().toLocaleString('es-AR')}`, margen, y);
-            y += 25;
-            doc.text('Detalle de la compra:', margen, y);
-            y += 20;
-
+            y += 24;
             carrito.forEach(item => {
                 const precio = Number(item.precio) || 0;
                 const cantidad = Number(item.cantidad) || 0;
-                const linea = `${item.nombre} x ${cantidad} = $${(precio * cantidad).toFixed(2)}`;
-                doc.text(linea, margen, y);
-                y += 20;
+                doc.text(`${item.nombre} x ${cantidad} = $${(precio * cantidad).toFixed(2)}`, margen, y);
+                y += 18;
             });
-
             y += 10;
             doc.setFontSize(14);
             doc.text(`Total: $${total.toFixed(2)}`, margen, y);
-            y += 40;
-            doc.setFontSize(10);
-            doc.text('Gracias por su compra en Click and Play.', margen, y);
-
             doc.save('ticket-clickandplay.pdf');
         });
     }

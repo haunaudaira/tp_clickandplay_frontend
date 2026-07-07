@@ -6,39 +6,91 @@
     font-style: normal;
 }
 
-body{
+:root {
+  --bg: #f3e0c2;
+  --bg-surface: rgba(255,255,255,0.95);
+  --surface-shadow: 0 20px 45px rgba(0, 0, 0, 0.12);
+  --text: #1c1c1c;
+  --muted: #393939;
+  --header-bg: rgba(255,255,255,0.95);
+  --button-bg: #f17d3a;
+  --button-hover: #6f3324;
+  --button-text: #ffffff;
+  --input-bg: #ffffff;
+  --input-border: rgba(28,28,28,0.18);
+  --bg-image: linear-gradient(rgba(255,255,255,0.80), rgba(255,255,255,0.72)), url("../assets/img/background.jpg");
+}
+
+body {
     margin: 0;
     min-height: 100vh;
     display: flex;
     flex-direction: column;
-    background-color: #f3e0c2;
-    background-image: linear-gradient(rgba(255,255,255,0.80), rgba(255,255,255,0.72)), url("../assets/img/background.jpg");
+    background-color: var(--bg);
+    color: var(--text);
+    background-image: var(--bg-image);
     background-size: cover;
     background-position: center;
-    color: #1c1c1c;
 }
 
-a {
-    color: inherit;
+body.dark {
+  --bg: #121212;
+  --bg-surface: rgba(24, 24, 24, 0.95);
+  --surface-shadow: 0 20px 45px rgba(255, 255, 255, 0.18);
+  --text: #fffefe;
+  --muted: #d0d0d0;
+  --header-bg: rgba(75, 75, 75, 0.95);
+  --button-bg: #4f8af4;
+  --button-hover: #3b6fd4;
+  --button-text: #ffffff;
+  --input-bg: #1a1a1a;
+  --input-border: rgba(255,255,255,0.12);
+  --bg-image: linear-gradient(rgba(0,0,0,0.72), rgba(0,0,0,0.82)), url("../assets/img/background.jpg");
+}
+
+.header-paginas,
+.contenedor-principal,
+.contenedor-centrado {
+  background-color: var(--bg-surface);
+}
+
+.bienvenida p,
+.contenedor-principal p {
+  color: var(--muted);
 }
 
 section {
     width: 100%;
 }
 
-header {
+.header-paginas{
     width: 100%;
     padding: 1rem 1.25rem;
     display: flex;
     justify-content: space-between;
     align-items: center;
     gap: 1rem;
-    background-color: rgba(255, 255, 255, 0.95);
+    background-color: var(--header-bg);
     box-shadow: 0 2px 12px rgba(0,0,0,0.08);
     position: sticky;
     top: 0;
     z-index: 10;
 }
+
+.contenedor-logo-index{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+#logo-index{
+    margin: 25px;
+    margin-top: 100px;
+    width: 350px;
+    min-width: 50px;
+    animation: flotar 3s ease-in-out infinite alternate;
+}
+
 
 .logo-container{
     display: flex;
@@ -46,6 +98,15 @@ header {
     align-items: center;
     gap: 0.75rem;
     flex-wrap: wrap;
+}
+
+@keyframes flotar {
+    0% {
+        transform: translateY(0px); /* Posición inicial */
+    }
+    100% {
+        transform: translateY(-20px); /* Sube 20 píxeles hacia arriba */
+    }
 }
 
 header h1 {
@@ -58,7 +119,7 @@ header .logo-container #logo {
     margin: 0;
     width: min(80px, 10vw);
     min-width: 60px;
-    max-width: 90px;
+    max-width: 50px;
 }
 
 body.home header .logo-container #logo {
@@ -69,12 +130,13 @@ body.home header .logo-container #logo {
 nav {
     display: flex;
     flex-wrap: wrap;
+    align-items: center;
     gap: 0.75rem;
     justify-content: center;
 }
 
 nav a {
-    color: #1c1c1c;
+    color: var(--text);
     text-decoration: none;
     font-weight: 600;
     padding: 0.65rem 1rem;
@@ -83,8 +145,7 @@ nav a {
 }
 
 nav a:hover {
-    background: rgba(0, 0, 0, 0.08);
-    transform: translateY(-1px);
+    text-decoration: underline;
 }
 
 main {
@@ -99,13 +160,13 @@ main {
     width: min(1100px, 100%);
     margin: 1rem auto 2rem;
     padding: 2rem 1.5rem;
-    background-color: rgba(255,255,255,0.95);
+    background-color: var(--bg-surface);
     border-radius: 24px;
     box-shadow: 0px 20px 45px rgba(0, 0, 0, 0.08);
 }
 
 .contenedor-centrado{
-    background-color: rgba(255,255,255,0.95);
+    background-color: var(--bg-surface);
     display: flex;
     justify-content: center;
     align-items: center;
@@ -125,8 +186,6 @@ main {
     height: auto;
 }
 
-/* TODO agregar animacion al logo? */
-
 #formulario-bienvenida, #nombreCliente{
     font-size: 22px;
 }
@@ -141,7 +200,7 @@ main {
 .contenedor-principal p {
     font-size: clamp(1rem, 1.4vw, 1.15rem);
     line-height: 1.6;
-    color: #393939;
+    color: var(--muted);
 }
 
 .contenedor-principal h2 {
@@ -153,25 +212,26 @@ h1{
     text-align: center;
 }
 
-.ingreso-nombre{
+.ingreso-nombre{  
     text-align: center;
     font-size: 18px;
 }
 
 button{
     margin-top: 10px;
+    padding: 10px;
     font-size: 22px;
     min-height: 52px;
     border: none;
     border-radius: 12px;
-    background-color: #2b8a3e;
-    color: #fff;
+    background-color: var(--button-bg);
+    color: var(--button-text);
     cursor: pointer;
     transition: transform 0.15s ease, box-shadow 0.15s ease, background-color 0.15s ease;
 }
 
 button:hover {
-    background-color: #246f31;
+    background-color: var(--button-hover);
     transform: translateY(-1px);
 }
 
@@ -179,20 +239,17 @@ button:active {
     transform: translateY(0);
 }
 
-input,
-button,
-textarea,
-select {
+input, button, textarea, select {
     font-family: inherit;
 }
 
 input {
     width: 100%;
     padding: 0.95rem 1rem;
-    border: 1px solid rgba(28,28,28,0.18);
+    border: 1px solid var(--input-border);
     border-radius: 12px;
-    background: #fff;
-    color: #1c1c1c;
+    background: var(--input-bg);
+    color: var(--text);
     font-size: 1rem;
 }
 
@@ -212,19 +269,19 @@ input {
 footer {
     font-size: 16px;
     display: flex;
-    justify-content: center;
+    justify-content: space-between;
     align-items: center;
     flex-wrap: wrap;
     gap: 10px;
     width: 100%;
     padding: 1.25rem 1.5rem;
-    background-color: rgba(255, 255, 255, 0.92);
+    background-color: var(--bg-surface);
     border-top: 1px solid rgba(28,28,28,0.08);
 }
 
 footer a {
     text-decoration: none;
-    color: black;
+    color: var(--text);
 }
 
 /* =========================================
@@ -240,7 +297,7 @@ footer a {
 }
 
 .filtros-categorias button {
-    background-color: #1c1c1c;
+    background-color: var(--button-bg);
     color: white;
     border: none;
     padding: 0.95rem 1.35rem;
@@ -251,7 +308,7 @@ footer a {
 }
 
 .filtros-categorias button:hover {
-    background-color: #333;
+    background-color: var(--button-hover);
     transform: translateY(-1px);
 }
 
@@ -263,10 +320,10 @@ footer a {
 }
 
 .tarjeta-producto {
-    background-color: rgba(255, 255, 255, 0.95);
+    background-color: var(--bg-surface);
     border-radius: 18px;
     padding: 1.5rem;
-    box-shadow: 0px 12px 30px rgba(0, 0, 0, 0.10);
+    box-shadow: var(--surface-shadow);
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -280,7 +337,6 @@ footer a {
     height: auto;
     border-radius: 12px;
     margin-bottom: 1rem;
-    box-shadow: 0px 6px 18px rgba(0, 0, 0, 0.12);
 }
 
 .tarjeta-producto h3 {
@@ -289,6 +345,7 @@ footer a {
 }
 
 .tarjeta-producto p {
+    color: var(--text);
     margin: 5px 0;
     font-size: 18px;
 }
@@ -296,7 +353,7 @@ footer a {
 .tarjeta-producto button {
     margin-top: 15px;
     width: 100%;
-    background-color: #2b8a3e; 
+    background-color: var(--button-bg); 
     color: white;
     border: none;
     padding: 12px;
@@ -324,7 +381,7 @@ footer a {
 }
 
 .item-carrito {
-    background-color: rgba(245, 245, 220, 0.95);
+    background-color:var(--bg);
     border-radius: 10px;
     padding: 15px 25px;
     display: flex;
@@ -341,14 +398,14 @@ footer a {
 }
 
 .controles-cantidad button {
-    width: 40px;
+    width:fit-content;
     height: 40px;
     font-size: 20px;
     font-weight: bold;
     border: none;
     border-radius: 5px;
     cursor: pointer;
-    background-color: #ddd;
+    background-color: #F54927;
 }
 
 

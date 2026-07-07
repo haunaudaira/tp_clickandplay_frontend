@@ -1,10 +1,10 @@
-// 1. Mostrar los productos guardados
+// mostrar los productos guardados
 const renderizarCarrito = () => {
     const carrito = JSON.parse(sessionStorage.getItem('carritoClickAndPlay')) || [];
     const contenedor = document.getElementById('contenedor-carrito');
     let total = 0;
 
-    contenedor.innerHTML = ""; // Limpiamos el DOM [4]
+    contenedor.innerHTML = ""; // limpiamos el dom 
 
     if (carrito.length === 0) {
         contenedor.innerHTML = "<p>Tu carrito está vacío. ¡Ve a la sección de productos!</p>";
@@ -27,7 +27,7 @@ const renderizarCarrito = () => {
                 <button onclick="cambiarCantidad(${item.id}, -1)">-</button>
                 <span>${item.cantidad}</span>
                 <button onclick="cambiarCantidad(${item.id}, 1)">+</button>
-                <button onclick="eliminarProducto(${item.id})" style="color:red;">Eliminar</button>
+                <button onclick="eliminarProducto(${item.id})">Eliminar</button>
             </div>
         `;
         contenedor.appendChild(div);
@@ -36,23 +36,23 @@ const renderizarCarrito = () => {
     document.getElementById('precio-total').textContent = total.toFixed(2);
 };
 
-// 2. Modificar cantidad (+1 o -1)
+// modificar cantidad (+1 o -1)
 const cambiarCantidad = (id, variacion) => {
     let carrito = JSON.parse(sessionStorage.getItem('carritoClickAndPlay'));
     const index = carrito.findIndex(item => item.id === id);
 
     if (index !== -1) {
         carrito[index].cantidad += variacion;
-        // Si la cantidad llega a 0, lo eliminamos del carrito [3]
+        // si la cantidad llega a 0, lo eliminamos del carrito
         if (carrito[index].cantidad <= 0) {
             carrito.splice(index, 1);
         }
         sessionStorage.setItem('carritoClickAndPlay', JSON.stringify(carrito));
-        renderizarCarrito(); // Recargamos la vista
+        renderizarCarrito(); // recargamos la vista
     }
 };
 
-// 3. Eliminar producto completamente [5]
+// eliminar producto completamente
 const eliminarProducto = (id) => {
     let carrito = JSON.parse(sessionStorage.getItem('carritoClickAndPlay'));
     carrito = carrito.filter(item => item.id !== id);
@@ -60,13 +60,13 @@ const eliminarProducto = (id) => {
     renderizarCarrito();
 };
 
-// 4. Vaciar Carrito por completo
+// vaciar carrito por completo
 const vaciarCarrito = () => {
     sessionStorage.removeItem('carritoClickAndPlay');
     renderizarCarrito();
 };
 
-// 5. Confirmar Compra
+// confirmar compra
 const confirmarCompra = () => {
     const carrito = JSON.parse(sessionStorage.getItem('carritoClickAndPlay')) || [];
     
@@ -75,30 +75,51 @@ const confirmarCompra = () => {
         return;
     }
 
-    // El TP exige mostrar un modal de confirmación [5]
-    const confirmacion = confirm("¿Deseas confirmar y finalizar tu compra?");
-    
-    if (confirmacion) {
-        // Enviamos la venta al backend para registrarla en la base de datos
-        (async () => {
-            try {
-                const productos = carrito.map(p => ({ id_producto: p.id, cantidad: p.cantidad }));
-                const total = carrito.reduce((acc, p) => acc + (Number(p.precio) || 0) * (Number(p.cantidad) || 0), 0);
+    // buscamos el modal y sus botones en el HTML
+    const modal = document.getElementById('modal-confirmacion');
+    const btnSi = document.getElementById('btn-modal-si');
+    const btnNo = document.getElementById('btn-modal-no');
 
-                await fetch('/admin/ventas/nueva', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ nombre_usuario: null, precio_total: total, productos })
-                });
-            } catch (err) {
-                console.error('Error al registrar la venta en el servidor:', err);
-            } finally {
-                // Redirigimos a la pantalla final donde usaremos jsPDF
+    // activamos el modal cambiandolo a 'flex' para que se centre en pantalla
+    modal.style.display = 'flex';
+
+    // si el usuario toca "cancelar", simplemente ocultamos el modal
+    btnNo.onclick = () => {
+        modal.style.display = 'none';
+    };
+
+    // si toca "si, comprar", se dispara el envio de los datos al backend
+    btnSi.onclick = async () => {
+        modal.style.display = 'none'; // cerramos el modal para limpiar la vista
+        
+        try {
+            // mapeamos los datos para que coincidan con lo que pide tu modelo
+            const total = carrito.reduce((acc, p) => acc + (p.precio * p.cantidad), 0);
+            const productos = carrito.map(p => ({ id_producto: p.id, cantidad: p.cantidad }));
+
+            const respuesta = await fetch('http://localhost:3000/api/ventas/nueva', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ 
+                    nombre_usuario: sessionStorage.getItem('nombreCliente') || 'Cliente Anónimo',
+                    precio_total: total, 
+                    productos: productos
+                })
+            });
+
+            if (respuesta.ok) {
+                // si la base de datos responde que se guardo, vamos a la ventana del ticket
                 window.location.href = 'ticket.html';
+            } else {
+                alert("Hubo un error al procesar tu compra en el servidor. Intenta de nuevo.");
             }
-        })();
-    }
+
+        } catch (error) {
+            console.error("Error de red o conexión:", error);
+            alert("No se pudo conectar con el servidor.");
+        }
+    };
 };
 
-// Ejecutamos al cargar la vista
+// ejecutamos al cargar la vista
 renderizarCarrito();
