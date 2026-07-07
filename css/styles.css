@@ -102,10 +102,10 @@ section {
 
 @keyframes flotar {
     0% {
-        transform: translateY(0px); /* Posición inicial */
+        transform: translateY(0px); /* posicion inicial */
     }
     100% {
-        transform: translateY(-20px); /* Sube 20 píxeles hacia arriba */
+        transform: translateY(-20px); /* sube 20 px hacia arriba */
     }
 }
 
